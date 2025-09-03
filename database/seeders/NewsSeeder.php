@@ -206,5 +206,160 @@ class NewsSeeder extends Seeder
             'author_id' => $claude->id,
             'created_at' => now()->subDay(),
         ]);
+
+        // Add more articles with varied dates to ensure statistical data
+        News::create([
+            'title' => 'Tourism Statistics 2023: Growing Sector Shows Promise',
+            'body' => '<h2>Tourism Growth Overview</h2>
+                      <p>The tourism sector in Burundi showed remarkable growth in 2023, with international visitors increasing by 45% compared to 2022. This growth was driven by improved security, better infrastructure, and targeted marketing campaigns.</p>
+                      
+                      <h3>Key Tourism Statistics</h3>
+                      <ul>
+                        <li>International arrivals: 315,000 visitors (+45%)</li>
+                        <li>Tourism revenue: $42 million (+38%)</li>
+                        <li>Average stay: 5.2 days</li>
+                        <li>Hotel occupancy rate: 68%</li>
+                        <li>New tourism jobs created: 2,300</li>
+                      </ul>
+                      
+                      <h3>Popular Destinations</h3>
+                      <p>Lake Tanganyika remains the top destination, followed by Kibira National Park and Rusizi National Park. Cultural tourism sites in Gitega and historical sites in Bujumbura also saw increased visitor numbers.</p>
+                      
+                      <h3>Future Outlook</h3>
+                      <p>With continued investment in tourism infrastructure and marketing, INSBU projects further growth in 2024, targeting 400,000 international visitors.</p>',
+            'excerpt' => 'Tourism sector shows 45% growth in 2023 with increased international visitors and revenue generation.',
+            'status' => 'published',
+            'image_url' => 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800',
+            'category' => 'Tourism',
+            'author_id' => $marie->id,
+            'published_at' => now()->subMonths(1)->subDays(5),
+            'created_at' => now()->subMonths(1)->subDays(8),
+        ]);
+
+        News::create([
+            'title' => 'Energy Production Statistics Q3 2023',
+            'body' => '<h2>Energy Sector Performance</h2>
+                      <p>The third quarter of 2023 marked significant progress in Burundi\'s energy sector, with increased production capacity and improved distribution networks.</p>
+                      
+                      <h3>Production Highlights</h3>
+                      <ul>
+                        <li>Hydroelectric generation: 285 GWh (+12%)</li>
+                        <li>Solar installations: 45 MW new capacity</li>
+                        <li>Grid connection rate: 12.3% (+1.8%)</li>
+                        <li>Rural electrification projects: 156 villages</li>
+                        <li>Energy efficiency improvements: 8%</li>
+                      </ul>
+                      
+                      <h3>Renewable Energy Progress</h3>
+                      <p>Renewable energy sources now account for 94% of total electricity production. New solar and micro-hydro projects are contributing to increased energy access in rural areas.</p>',
+            'excerpt' => 'Q3 2023 energy statistics show 12% increase in hydroelectric generation and expanded rural electrification.',
+            'status' => 'published',
+            'image_url' => 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=800',
+            'category' => 'Energy',
+            'author_id' => $admin->id,
+            'published_at' => now()->subMonths(2)->subDays(10),
+            'created_at' => now()->subMonths(2)->subDays(12),
+        ]);
+
+        News::create([
+            'title' => 'Financial Services Sector Analysis 2023',
+            'body' => '<h2>Banking and Finance Overview</h2>
+                      <p>The financial services sector continued its expansion in 2023, with increased banking penetration and growth in mobile financial services.</p>
+                      
+                      <h3>Banking Statistics</h3>
+                      <ul>
+                        <li>Bank branches: 187 (+15 new branches)</li>
+                        <li>Account holders: 1.2 million (+18%)</li>
+                        <li>Credit portfolio: $890 million (+22%)</li>
+                        <li>Deposits: $1.3 billion (+16%)</li>
+                        <li>ATM network: 245 machines (+35)</li>
+                      </ul>
+                      
+                      <h3>Mobile Money Growth</h3>
+                      <p>Mobile money services saw explosive growth with 3.8 million active users, representing 30% of the adult population. Transaction values increased by 65% to $2.1 billion.</p>',
+            'excerpt' => 'Financial services sector shows strong growth with 18% increase in bank account holders and 65% growth in mobile money.',
+            'status' => 'published',
+            'image_url' => 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=800',
+            'category' => 'Finance',
+            'author_id' => $pierre->id,
+            'published_at' => now()->subMonths(3)->subDays(2),
+            'created_at' => now()->subMonths(3)->subDays(5),
+        ]);
+
+        News::create([
+            'title' => 'Manufacturing Sector Growth Report 2023',
+            'body' => '<h2>Industrial Production Analysis</h2>
+                      <p>The manufacturing sector demonstrated robust growth in 2023, driven by increased domestic demand and export opportunities.</p>
+                      
+                      <h3>Production Statistics</h3>
+                      <ul>
+                        <li>Manufacturing output index: 112.5 (+8.3%)</li>
+                        <li>Food processing: 235,000 tons (+15%)</li>
+                        <li>Textile production: 12 million meters (+22%)</li>
+                        <li>Construction materials: +18%</li>
+                        <li>New manufacturing jobs: 8,500</li>
+                      </ul>
+                      
+                      <h3>Export Performance</h3>
+                      <p>Manufactured exports reached $125 million, with textiles and processed foods leading the growth. New markets in the East African region contributed significantly to this expansion.</p>',
+            'excerpt' => 'Manufacturing sector posts 8.3% growth with strong performance in food processing and textiles.',
+            'status' => 'published',
+            'image_url' => 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800',
+            'category' => 'Manufacturing',
+            'author_id' => $claude->id,
+            'published_at' => now()->subMonths(4)->subDays(8),
+            'created_at' => now()->subMonths(4)->subDays(11),
+        ]);
+
+        // Add recent articles for current month
+        News::create([
+            'title' => 'Digital Transformation in Public Services 2024',
+            'body' => '<h2>E-Government Progress</h2>
+                      <p>The government\'s digital transformation initiative has made significant progress in modernizing public services and improving citizen access to government information.</p>
+                      
+                      <h3>Digital Services Launched</h3>
+                      <ul>
+                        <li>Online business registration portal</li>
+                        <li>Digital tax filing system</li>
+                        <li>Electronic passport application</li>
+                        <li>Online land registry services</li>
+                        <li>Digital health records system</li>
+                      </ul>
+                      
+                      <h3>Usage Statistics</h3>
+                      <p>Over 85,000 citizens have used the new digital services, with a 92% satisfaction rate. Processing times have been reduced by an average of 65%.</p>',
+            'excerpt' => 'Government digital transformation shows strong progress with 85,000+ citizens using new e-services.',
+            'status' => 'published',
+            'image_url' => 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800',
+            'category' => 'Technology',
+            'author_id' => $marie->id,
+            'published_at' => now()->subDays(1),
+            'created_at' => now()->subDays(3),
+        ]);
+
+        News::create([
+            'title' => 'Small Business Development Statistics 2024',
+            'body' => '<h2>SME Sector Growth</h2>
+                      <p>Small and medium enterprises continue to be the backbone of Burundi\'s economy, showing resilient growth and job creation in early 2024.</p>
+                      
+                      <h3>Current Statistics</h3>
+                      <ul>
+                        <li>Registered SMEs: 45,600 (+12% from 2023)</li>
+                        <li>New business registrations: 3,200 (Q1 2024)</li>
+                        <li>SME employment: 340,000 people</li>
+                        <li>Access to credit: 28% of SMEs</li>
+                        <li>Digital adoption: 42% use digital tools</li>
+                      </ul>
+                      
+                      <h3>Support Programs</h3>
+                      <p>Government support programs have provided training to 8,500 entrepreneurs and facilitated access to $15 million in credit facilities.</p>',
+            'excerpt' => 'SME sector shows 12% growth with 45,600 registered businesses and strong job creation.',
+            'status' => 'published',
+            'image_url' => 'https://images.unsplash.com/photo-1556761175-4b46a572b786?w=800',
+            'category' => 'Business',
+            'author_id' => $admin->id,
+            'published_at' => now(),
+            'created_at' => now()->subHours(6),
+        ]);
     }
 }

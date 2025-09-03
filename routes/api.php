@@ -85,6 +85,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/users/{user}/status', [AdminController::class, 'toggleUserStatus']);
         Route::delete('/users/{user}', [AdminController::class, 'deleteUser']);
         
+        // Article management
+        Route::get('/articles', [AdminController::class, 'getArticles']);
+        Route::patch('/articles/{news}/approve', [AdminController::class, 'approveArticle']);
+        Route::patch('/articles/{news}/reject', [AdminController::class, 'rejectArticle']);
+        
         // System management
         Route::get('/roles', [AdminController::class, 'getRoles']);
         Route::get('/statistics', [AdminController::class, 'getStatistics']);

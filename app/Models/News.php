@@ -29,6 +29,7 @@ class News extends Model
         'reading_time',
         'author_id',
         'published_at',
+        'rejection_reason',
     ];
 
     /**

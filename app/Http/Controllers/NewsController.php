@@ -66,12 +66,20 @@ class NewsController extends Controller
             'category' => 'sometimes|string|max:100',
         ]);
 
+        // Determine status based on user role
+        $status = $request->status ?? 'draft';
+        
+        // If editor is trying to publish, set to pending for admin review
+        if ($status === 'published' && $request->user()->isEditor() && !$request->user()->isAdmin()) {
+            $status = 'pending';
+        }
+
         // Create news article
         $news = News::create([
             'title' => $request->title,
             'body' => $request->body,
             'excerpt' => $request->excerpt,
-            'status' => $request->status ?? 'draft',
+            'status' => $status,
             'image_url' => $request->image_url,
             'category' => $request->category,
             'author_id' => $request->user()->id,
@@ -131,10 +139,25 @@ class NewsController extends Controller
             'category' => 'sometimes|string|max:100',
         ]);
 
+        // Prepare update data
+        $updateData = $request->only([
+            'title', 'body', 'excerpt', 'image_url', 'category'
+        ]);
+        
+        // Handle status updates based on user role
+        if ($request->has('status')) {
+            $status = $request->status;
+            
+            // If editor is trying to publish, set to pending for admin review
+            if ($status === 'published' && $request->user()->isEditor() && !$request->user()->isAdmin()) {
+                $status = 'pending';
+            }
+            
+            $updateData['status'] = $status;
+        }
+
         // Update news article
-        $news->update($request->only([
-            'title', 'body', 'excerpt', 'status', 'image_url', 'category'
-        ]));
+        $news->update($updateData);
 
         $news->load('author');
 

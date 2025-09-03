@@ -62,7 +62,22 @@ class AdminController extends Controller
         
         $users = $query->orderBy('created_at', 'desc')->paginate($perPage);
         
-        return response()->json($users);
+        // Transform users to include status field
+        $transformedUsers = $users->getCollection()->map(function ($user) {
+            $userArray = $user->toArray();
+            $userArray['status'] = $user->is_active ? 'active' : 'suspended';
+            return $userArray;
+        });
+
+        return response()->json([
+            'data' => $transformedUsers,
+            'current_page' => $users->currentPage(),
+            'last_page' => $users->lastPage(),
+            'per_page' => $users->perPage(),
+            'total' => $users->total(),
+            'from' => $users->firstItem(),
+            'to' => $users->lastItem(),
+        ]);
     }
 
     /**
@@ -84,8 +99,14 @@ class AdminController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
             'role' => 'required|in:user,editor,admin',
+            'status' => 'sometimes|in:active,suspended',
             'is_active' => 'sometimes|boolean',
         ]);
+
+        // Determine is_active from status or is_active field
+        $isActive = $request->has('status') 
+            ? ($request->status === 'active') 
+            : $request->get('is_active', true);
 
         // Create new user
         $user = User::create([
@@ -93,12 +114,16 @@ class AdminController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => $request->role,
-            'is_active' => $request->get('is_active', true),
+            'is_active' => $isActive,
         ]);
+
+        // Add status field to response
+        $userArray = $user->toArray();
+        $userArray['status'] = $user->is_active ? 'active' : 'suspended';
 
         return response()->json([
             'message' => 'User created successfully',
-            'user' => $user,
+            'user' => $userArray,
         ], Response::HTTP_CREATED);
     }
 
@@ -112,12 +137,20 @@ class AdminController extends Controller
             'name' => 'sometimes|string|max:255',
             'email' => ['sometimes', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
             'role' => 'sometimes|in:user,editor,admin',
+            'status' => 'sometimes|in:active,suspended',
             'is_active' => 'sometimes|boolean',
             'password' => 'sometimes|string|min:8',
         ]);
 
         // Prepare update data
-        $updateData = $request->only(['name', 'email', 'role', 'is_active']);
+        $updateData = $request->only(['name', 'email', 'role']);
+        
+        // Handle status field
+        if ($request->has('status')) {
+            $updateData['is_active'] = $request->status === 'active';
+        } elseif ($request->has('is_active')) {
+            $updateData['is_active'] = $request->is_active;
+        }
         
         // Hash password if provided
         if ($request->has('password')) {
@@ -127,9 +160,13 @@ class AdminController extends Controller
         // Update user
         $user->update($updateData);
 
+        // Add status field to response
+        $userArray = $user->toArray();
+        $userArray['status'] = $user->is_active ? 'active' : 'suspended';
+
         return response()->json([
             'message' => 'User updated successfully',
-            'user' => $user,
+            'user' => $userArray,
         ]);
     }
 
@@ -308,6 +345,96 @@ class AdminController extends Controller
         return response()->json([
             'registrations' => $registrations,
             'logins' => $logins,
+        ]);
+    }
+
+    /**
+     * Get all articles with pagination for admin review
+     */
+    public function getArticles(Request $request)
+    {
+        $perPage = $request->get('per_page', 15);
+        
+        $query = News::with('author');
+        
+        // Search functionality
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->search($search);
+        }
+        
+        // Filter by status
+        if ($request->has('status')) {
+            $query->status($request->status);
+        }
+        
+        // Filter by category
+        if ($request->has('category')) {
+            $query->category($request->category);
+        }
+        
+        // Filter by author
+        if ($request->has('author_id')) {
+            $query->where('author_id', $request->author_id);
+        }
+        
+        // Sort
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortOrder = $request->get('sort_order', 'desc');
+        $query->orderBy($sortBy, $sortOrder);
+        
+        $articles = $query->paginate($perPage);
+        
+        return response()->json($articles);
+    }
+
+    /**
+     * Approve an article for publishing
+     */
+    public function approveArticle(News $news)
+    {
+        // Only pending articles can be approved
+        if ($news->status !== 'pending') {
+            return response()->json([
+                'message' => 'Only pending articles can be approved.'
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
+        $news->update([
+            'status' => 'published',
+            'published_at' => now()
+        ]);
+
+        return response()->json([
+            'message' => 'Article approved and published successfully',
+            'article' => $news->load('author')
+        ]);
+    }
+
+    /**
+     * Reject an article
+     */
+    public function rejectArticle(Request $request, News $news)
+    {
+        // Only pending articles can be rejected
+        if ($news->status !== 'pending') {
+            return response()->json([
+                'message' => 'Only pending articles can be rejected.'
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
+        $request->validate([
+            'reason' => 'sometimes|string|max:500'
+        ]);
+
+        $news->update([
+            'status' => 'draft',
+            'rejection_reason' => $request->get('reason', '')
+        ]);
+
+        return response()->json([
+            'message' => 'Article rejected successfully',
+            'article' => $news->load('author')
         ]);
     }
 }
