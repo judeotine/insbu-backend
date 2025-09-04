@@ -55,19 +55,39 @@ class DocumentController extends Controller
             ], Response::HTTP_FORBIDDEN);
         }
 
-        // Validate request data
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'sometimes|string',
-            'category' => 'sometimes|string|max:100',
-            'files' => 'required|array|min:1',
-            'files.*' => 'file|max:10240|mimes:pdf,doc,docx,xls,xlsx,csv,jpg,jpeg,png,gif', // 10MB max
-            'is_public' => 'sometimes|boolean',
-        ]);
+        // Handle both single file and multiple files upload
+        $files = [];
+        if ($request->hasFile('file')) {
+            // Single file upload
+            $files = [$request->file('file')];
+            $request->validate([
+                'title' => 'required|string|max:255',
+                'description' => 'sometimes|string',
+                'category' => 'sometimes|string|max:100',
+                'file' => 'required|file|max:10240|mimes:pdf,doc,docx,xls,xlsx,csv,jpg,jpeg,png,gif', // 10MB max
+                'is_public' => 'sometimes|boolean',
+            ]);
+        } elseif ($request->hasFile('files')) {
+            // Multiple files upload
+            $files = $request->file('files');
+            $request->validate([
+                'title' => 'required|string|max:255',
+                'description' => 'sometimes|string',
+                'category' => 'sometimes|string|max:100',
+                'files' => 'required|array|min:1',
+                'files.*' => 'file|max:10240|mimes:pdf,doc,docx,xls,xlsx,csv,jpg,jpeg,png,gif', // 10MB max
+                'is_public' => 'sometimes|boolean',
+            ]);
+        } else {
+            return response()->json([
+                'message' => 'No file provided. Please select a file to upload.',
+                'errors' => ['file' => ['A file is required for upload.']]
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
 
         $uploadedDocuments = [];
 
-        foreach ($request->file('files') as $file) {
+        foreach ($files as $file) {
             // Generate unique file name
             $fileName = Str::uuid() . '.' . $file->getClientOriginalExtension();
             
@@ -85,7 +105,7 @@ class DocumentController extends Controller
                 'file_type' => $file->getMimeType(),
                 'category' => $request->category,
                 'uploaded_by' => $request->user()->id,
-                'is_public' => $request->get('is_public', true),
+                'is_public' => filter_var($request->get('is_public', true), FILTER_VALIDATE_BOOLEAN),
             ]);
 
             $document->load('uploader');

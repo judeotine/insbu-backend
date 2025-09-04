@@ -7,6 +7,7 @@ use App\Http\Controllers\NewsController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\StatsController;
+use App\Http\Controllers\ResourceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,27 +42,35 @@ Route::middleware('auth:sanctum')->group(function () {
     // News routes
     Route::prefix('news')->group(function () {
         Route::get('/', [NewsController::class, 'index']);
-        Route::post('/', [NewsController::class, 'store']);
         Route::get('/latest', [NewsController::class, 'latest']);
         Route::get('/categories', [NewsController::class, 'categories']);
         Route::get('/statistics', [NewsController::class, 'statistics']);
         Route::get('/{news}', [NewsController::class, 'show']);
-        Route::put('/{news}', [NewsController::class, 'update']);
-        Route::delete('/{news}', [NewsController::class, 'destroy']);
+        
+        // Editor and Admin can create, edit, delete
+        Route::middleware('role:admin,editor')->group(function () {
+            Route::post('/', [NewsController::class, 'store']);
+            Route::put('/{news}', [NewsController::class, 'update']);
+            Route::delete('/{news}', [NewsController::class, 'destroy']);
+        });
     });
 
     // Document routes
     Route::prefix('documents')->group(function () {
         Route::get('/', [DocumentController::class, 'index']);
-        Route::post('/', [DocumentController::class, 'store']);
         Route::get('/recent', [DocumentController::class, 'recent']);
         Route::get('/popular', [DocumentController::class, 'popular']);
         Route::get('/categories', [DocumentController::class, 'categories']);
         Route::get('/statistics', [DocumentController::class, 'statistics']);
         Route::get('/{document}', [DocumentController::class, 'show']);
-        Route::put('/{document}', [DocumentController::class, 'update']);
-        Route::delete('/{document}', [DocumentController::class, 'destroy']);
         Route::get('/{document}/download', [DocumentController::class, 'download']);
+        
+        // Editor and Admin can upload, edit, delete documents
+        Route::middleware('role:admin,editor')->group(function () {
+            Route::post('/', [DocumentController::class, 'store']);
+            Route::put('/{document}', [DocumentController::class, 'update']);
+            Route::delete('/{document}', [DocumentController::class, 'destroy']);
+        });
     });
 
     // Statistics routes
@@ -74,8 +83,22 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/role-distribution', [StatsController::class, 'roleDistribution']);
     });
 
+    // Resource routes
+    Route::prefix('resources')->group(function () {
+        Route::get('/', [ResourceController::class, 'index']);
+        Route::get('/categories', [ResourceController::class, 'categories']);
+        Route::get('/{resource}', [ResourceController::class, 'show']);
+        
+        // Admin only routes for resource management
+        Route::middleware('role:admin')->group(function () {
+            Route::post('/', [ResourceController::class, 'store']);
+            Route::put('/{resource}', [ResourceController::class, 'update']);
+            Route::delete('/{resource}', [ResourceController::class, 'destroy']);
+        });
+    });
+
     // Admin routes (admin access only)
-    Route::prefix('admin')->group(function () {
+    Route::prefix('admin')->middleware('role:admin')->group(function () {
         // User management
         Route::get('/users', [AdminController::class, 'getUsers']);
         Route::post('/users', [AdminController::class, 'createUser']);
