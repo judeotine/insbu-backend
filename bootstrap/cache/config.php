@@ -244,6 +244,43 @@
       ),
     ),
   ),
+  'filesystems' => 
+  array (
+    'default' => 'local',
+    'disks' => 
+    array (
+      'local' => 
+      array (
+        'driver' => 'local',
+        'root' => 'C:\\Users\\Jude\\Documents\\INSBU\\Final Project\\backend\\storage\\app',
+        'throw' => false,
+      ),
+      'public' => 
+      array (
+        'driver' => 'local',
+        'root' => 'C:\\Users\\Jude\\Documents\\INSBU\\Final Project\\backend\\storage\\app/public',
+        'url' => 'http://localhost:8000/storage',
+        'visibility' => 'public',
+        'throw' => false,
+      ),
+      's3' => 
+      array (
+        'driver' => 's3',
+        'key' => '',
+        'secret' => '',
+        'region' => 'us-east-1',
+        'bucket' => '',
+        'url' => NULL,
+        'endpoint' => NULL,
+        'use_path_style_endpoint' => false,
+        'throw' => false,
+      ),
+    ),
+    'links' => 
+    array (
+      'C:\\Users\\Jude\\Documents\\INSBU\\Final Project\\backend\\public\\storage' => 'C:\\Users\\Jude\\Documents\\INSBU\\Final Project\\backend\\storage\\app/public',
+    ),
+  ),
   'sanctum' => 
   array (
     'stateful' => 
